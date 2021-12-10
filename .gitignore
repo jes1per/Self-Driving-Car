@@ -1,3 +1,4 @@
 runs/
 results/
 */__pycache__
+result*.*
