@@ -23,6 +23,7 @@ class RunManager():
     def __init__(self):
         self.epoch_count = 0
         self.epoch_loss = 0
+        self.sample_count = 0
         self.epoch_num_correct = 0
         self.epoch_start_time = None
         
@@ -34,13 +35,13 @@ class RunManager():
         self.network = None
         self.loader = None
         self.tb = None
+
     def begin_run(self, run,network,image_size):
         self.run_start_time = time.time()
         self.run_params = run
         self.run_count += 1
         self.network = network
-        self.tb = SummaryWriter(comment=f'-{run}')
-        
+        self.tb = SummaryWriter(comment=f'-{run}')  
         #self.loader = loader
         #self.batch_size = batch_size
         self.image_size = image_size
@@ -65,17 +66,20 @@ class RunManager():
     def end_run(self):
         self.tb.close()
         self.epoch_count = 0
+
     def begin_epoch(self):
         self.epoch_start_time = time.time()
         self.epoch_count += 1
         self.epoch_loss = 0
+        self.sample_count = 0
         self.epoch_num_correct = 0
+
     def end_epoch(self):
         epoch_duration = time.time() - self.epoch_start_time
         run_duration = time.time()-self.run_start_time
         
-        loss = self.epoch_loss / len(self.loader.dataset)
-        accuracy = self.epoch_num_correct / len(self.loader.dataset)
+        loss = self.epoch_loss / self.sample_count
+        accuracy = self.epoch_num_correct / self.sample_count
         
         self.tb.add_scalar('Loss',loss,self.epoch_count)
         self.tb.add_scalar('Accuracy', accuracy, self.epoch_count)
@@ -99,15 +103,17 @@ class RunManager():
         clear_output(wait=True)
         display(df)
         
-    def track_loss(self,loss):
-        self.epoch_loss +=loss.item() * self.loader.batch_size
-        
+    def track_loss(self, loss, batch_size):
+        self.epoch_loss +=loss.item() * batch_size
+        self.sample_count += batch_size
+
     def track_num_correct(self,preds, labels):
         self.epoch_num_correct += self._get_num_correct(preds,labels)
         
     @torch.no_grad()
     def _get_num_correct(self,preds,labels):
         return preds.argmax(dim=1).eq(labels).sum().item()
+
     def save(self, fileName):
         pd.DataFrame.from_dict(
             self.run_data,
