@@ -21,7 +21,7 @@ from Run import RunManager as RM
 from DataLoading import UdacityDataset as UD
 from DataLoading import ConsecutiveBatchSampler as CB
 
-from model import TransferLearning as TL
+from model import transferlearning_regnet_x as TL
 
 # %run Visualization/Visualization.ipynb
 
@@ -181,7 +181,7 @@ parameters = OrderedDict(
 
 m = RM.RunManager()
 for run in RB.RunBuilder.get_runs(parameters):
-    network = TL.TLearning()
+    network = TL.TLearning_regnetx()
     network.cuda()
     network.to(device)
     optimizer = optim.Adam(network.parameters(),lr = run.learning_rate,betas=(0.9, 0.999), eps=1e-08, weight_decay=0.001/run.batch_size, amsgrad=False)
@@ -271,7 +271,7 @@ print('Training time taken: ', training_time)
 # %%
 # Load Directly from disk
 
-tl_model = TLearning().to(device)
+tl_model = TL.TLearning_EffNetB7().to(device)
 tl_model.load_state_dict(torch.load('/home/kxk190041/Self-Driving-Car/results/Angle_Adam_MSE_Paper_Model-epoch-9'))
 
 # %% [markdown]
@@ -284,7 +284,7 @@ visualize_cnn(tl_model.ResNet.conv1)
 # ### GradCAM
 
 # %%
-udacity_dataset = UdacityDataset(csv_file='/home/kxk190041/data/self_driving/train/interpolated.csv',
+udacity_dataset = UD.UdacityDataset(csv_file='/home/kxk190041/data/self_driving/train/interpolated.csv',
                                  root_dir='/home/kxk190041/data/self_driving/train/',
                                  transform=transforms.Compose([transforms.ToTensor()]),
                                  select_camera='center_camera')

@@ -3,7 +3,7 @@ from torchvision import models
 import torch.nn as nn
 import torch.nn.functional as F
 
-class TLearning_widresnet(nn.Module):
+class TLearning_wideresnet(nn.Module):
     def __init__(self):
         super(TLearning_wideresnet,self).__init__()
         self.pretrained = models.wide_resnet50_2(pretrained=True, progress=True)
