@@ -121,5 +121,5 @@ class RunManager():
             
         ).to_csv(f'{fileName}.csv')
         
-        with open(f'{fileName}.json','w',encoading = 'utf-8') as f:
+        with open(f'{fileName}.json','w',encoding = 'utf-8') as f:
             json.dump(self.run_data, f, ensure_ascii = False, indent =4)
