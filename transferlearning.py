@@ -21,7 +21,7 @@ from Run import RunManager as RM
 from DataLoading import UdacityDataset as UD
 from DataLoading import ConsecutiveBatchSampler as CB
 
-from model import transferlearning_regnet_x as TL
+from model import transferlearning_vgg16 as TL
 
 # %run Visualization/Visualization.ipynb
 
@@ -181,7 +181,7 @@ parameters = OrderedDict(
 
 m = RM.RunManager()
 for run in RB.RunBuilder.get_runs(parameters):
-    network = TL.TLearning_regnetx()
+    network = TL.TLearning_VGG()
     network.cuda()
     network.to(device)
     optimizer = optim.Adam(network.parameters(),lr = run.learning_rate,betas=(0.9, 0.999), eps=1e-08, weight_decay=0.001/run.batch_size, amsgrad=False)
